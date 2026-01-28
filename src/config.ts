@@ -20,8 +20,8 @@ export const config = {
     url: process.env.MONGO_URL,
   },
   jwt: {
-    secret: process.env.JWT_KEY,
-    expiresIn: process.env.JWT_EXPIRY_DATE,
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN,
     saltOrRounds: Number(process.env.JWT_SALT),
   },
   redis: {
