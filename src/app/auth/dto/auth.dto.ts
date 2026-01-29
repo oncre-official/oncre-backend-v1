@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
-import { IRegister, IVerifyPhone } from '../types/auth.interface';
+import { ILogin, IRegister, IResetPin, ISetPin, IVerifyPhone } from '../types/auth.interface';
 
 export class RegisterDto implements IRegister {
   @ApiProperty({ description: 'User phone number' })
@@ -10,7 +10,36 @@ export class RegisterDto implements IRegister {
   phone: string;
 }
 
+export class LoginDto extends RegisterDto implements ILogin {
+  @ApiProperty({ description: 'User Pin' })
+  @Length(4, 4)
+  @Matches(/^\d{4}$/)
+  @IsNotEmpty()
+  pin: string;
+}
+
 export class VerifyPhoneDto extends RegisterDto implements IVerifyPhone {
+  @ApiProperty({ description: 'User OTP code' })
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
+}
+
+export class SetPinDto implements ISetPin {
+  @ApiProperty({ description: 'User Pin' })
+  @Length(4, 4)
+  @Matches(/^\d{4}$/)
+  @IsNotEmpty()
+  pin: string;
+}
+
+export class ResetPinDto extends RegisterDto implements IResetPin {
+  @ApiProperty({ description: 'User Pin' })
+  @Length(4, 4)
+  @Matches(/^\d{4}$/)
+  @IsNotEmpty()
+  pin: string;
+
   @ApiProperty({ description: 'User OTP code' })
   @IsString()
   @IsNotEmpty()

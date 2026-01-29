@@ -15,5 +15,5 @@ export enum USER_STATUS {
 
 export enum TOKEN_TYPE {
   PHONE_VERIFICATION = 'phone_verification',
-  PASSWORD_RESET = 'password_reset',
+  PIN_RESET = 'pin_reset',
 }

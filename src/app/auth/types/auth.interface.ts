@@ -6,7 +6,20 @@ export interface IRegister {
   phone: string;
 }
 
+export interface ILogin extends IRegister {
+  pin: string;
+}
+
 export interface IVerifyPhone extends IRegister {
+  otp: string;
+}
+
+export interface ISetPin {
+  pin: string;
+}
+
+export interface IResetPin extends IRegister {
+  pin: string;
   otp: string;
 }
 
@@ -19,4 +32,5 @@ export interface IRegisterResponse {
 export interface IVerifyPhoneResponse {
   user: User;
   token: string;
+  isLoggedIn: boolean;
 }
