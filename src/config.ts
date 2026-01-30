@@ -30,6 +30,11 @@ export const config = {
     url: 'redis://localhost:6379',
   },
   utilities: {},
+  termii: {
+    apiKey: process.env.TERMII_API_KEY,
+    secretKey: process.env.TERMII_SECRET_KEY,
+    senderId: process.env.TERMII_SENDER_ID || 'N-Alert',
+  },
   slack: {
     webhookUrl: slackWebhook,
     chatHookUrl: process.env.MSG_SLACK_API_HOOK_URL,

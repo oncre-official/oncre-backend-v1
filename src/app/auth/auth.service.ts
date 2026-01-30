@@ -1,10 +1,10 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ObjectId } from 'mongodb';
 
 import { TOKEN_TYPE, USER_STATUS } from '@on/enum';
-import { getRandomNumber } from '@on/helpers';
+import { getRandomNumber, normalizePhoneNumber } from '@on/helpers';
 import { compareResource, hashResource } from '@on/helpers/password';
+import { TermiiService } from '@on/services/termii/service';
 import { ServiceResponse } from '@on/utils/types';
 
 import { User } from '../user/model/user.model';
@@ -19,6 +19,7 @@ export class AuthService {
   constructor(
     private readonly jwt: JwtService,
     private readonly user: UserRepository,
+    private readonly termii: TermiiService,
     private readonly token: TokenRepository,
   ) {}
 
@@ -34,7 +35,7 @@ export class AuthService {
 
     if (!user) user = await this.user.create({ phone });
 
-    const otp = await this.createVerificationOtp(user._id);
+    const otp = await this.createVerificationOtp(user);
 
     const data: IRegisterResponse = {
       phone,
@@ -52,7 +53,7 @@ export class AuthService {
     if (!user) throw new NotFoundException('user does not exist');
     if (user.phoneVerified) throw new ConflictException('User phone number already verified.');
 
-    const otp = await this.createVerificationOtp(user._id);
+    const otp = await this.createVerificationOtp(user);
 
     const data: IRegisterResponse = {
       phone,
@@ -152,7 +153,7 @@ export class AuthService {
     if (!user) throw new NotFoundException('User with this phone number does not exist.');
     if (!user.phoneVerified) throw new BadRequestException('Phone number not verified');
 
-    const otp = await this.createVerificationOtp(user._id, TOKEN_TYPE.PIN_RESET);
+    const otp = await this.createVerificationOtp(user, TOKEN_TYPE.PIN_RESET);
 
     const data: IRegisterResponse = {
       phone,
@@ -194,22 +195,25 @@ export class AuthService {
   /**
    * PRIVATE METHODS
    */
-  private async createVerificationOtp(userId: ObjectId, type: TOKEN_TYPE = TOKEN_TYPE.PHONE_VERIFICATION) {
+  private async createVerificationOtp(user: User, type: TOKEN_TYPE = TOKEN_TYPE.PHONE_VERIFICATION) {
     const otpCode = getRandomNumber();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    await this.token.deleteMany({ userId, type });
+    await this.token.deleteMany({ userId: user._id, type });
 
     const token = String(otpCode);
 
     await this.token.create({
-      userId,
+      userId: user._id,
       token,
       type,
       expiresAt,
     });
 
-    //TODO SEND SMS INSTEAD OF RETURNING OTP IN RESPONSE
+    const message = `Your otp code is ${token} valid for 10 minutes`;
+    const to = normalizePhoneNumber(user.phone);
+
+    await this.termii.sendMessage(to, message);
 
     return token;
   }

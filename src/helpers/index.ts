@@ -33,6 +33,18 @@ export function formatPhoneNumber(phoneNumber: string): string {
   return cleanedNumber;
 }
 
+export function normalizePhoneNumber(phone: string): string {
+  if (!phone) throw new Error('Phone number is required');
+
+  let normalized = phone.replace(/\D/g, '');
+  if (normalized.startsWith('234')) normalized = normalized.slice(3);
+
+  if (normalized.startsWith('0')) normalized = normalized.slice(1);
+  if (normalized.length !== 10) throw new Error('Invalid Nigerian phone number');
+
+  return `+234${normalized}`;
+}
+
 export const validateFields = (field: string): string => {
   if (!field || field === 'undefined' || field?.length < 1) {
     throw new BadRequestException('Invalid name in file');
