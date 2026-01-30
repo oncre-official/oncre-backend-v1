@@ -200,15 +200,17 @@ export class AuthService {
 
     await this.token.deleteMany({ userId, type });
 
+    const token = String(otpCode);
+
     await this.token.create({
       userId,
-      token: String(otpCode),
+      token,
       type,
       expiresAt,
     });
 
     //TODO SEND SMS INSTEAD OF RETURNING OTP IN RESPONSE
 
-    return String(otpCode);
+    return token;
   }
 }
