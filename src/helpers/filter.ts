@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-const ids = ['_id', 'userId'];
+const ids = ['_id', 'userId', 'stateId'];
 
 export function requestFilter(data) {
   if (data) {

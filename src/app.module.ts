@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CacheableMemory } from 'cacheable';
 
 import { AuthModule } from './app/auth/auth.module';
+import { SharedModule } from './app/shared/shared.module';
 import { UserModule } from './app/user/user.module';
 import { AppController } from './app.controller';
 import { config } from './config';
@@ -34,6 +35,7 @@ import { HttpExceptionFilter } from './handlers/exceptions/http-exception.filter
     }),
     AuthModule,
     UserModule,
+    SharedModule,
   ],
   controllers: [AppController],
   providers: [
