@@ -8,6 +8,7 @@ import { ResponseDTO } from '@on/utils/types';
 
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto, ResetPinDto, SetPinDto, VerifyPhoneDto } from './dto/auth.dto';
+import { CompleteRegistrationDto } from './dto/complete-auth.dto';
 import { JwtAuthGuard } from './guard/auth.guard';
 
 import type { UserDocument } from '../user/model/user.model';
@@ -131,6 +132,32 @@ export class AuthController {
   async resetPin(@Body() payload: ResetPinDto, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
     try {
       const response = await this.authService.resetPin(payload);
+
+      return JsonResponse(res, response);
+    } catch (error) {
+      return ErrorResponse(res, error, req);
+    }
+  }
+
+  /**
+   * COMPLETE REGISTRATION
+   */
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'User completes registration',
+    description: 'Allow user to complete their registration',
+  })
+  @ApiOkResponse({ description: 'Registration completed successfully', type: ApiResponseDTO })
+  @UseGuards(JwtAuthGuard)
+  @Post('register/complete')
+  async complete(
+    @Body() payload: CompleteRegistrationDto,
+    @User() user: UserDocument,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<ResponseDTO> {
+    try {
+      const response = await this.authService.complete(user, payload);
 
       return JsonResponse(res, response);
     } catch (error) {

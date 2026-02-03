@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Document, HydratedDocument } from 'mongoose';
+import { ObjectId } from 'mongodb';
+import { Document, HydratedDocument, Types } from 'mongoose';
 
 import { ROLE, USER_STATUS } from '@on/enum';
 
@@ -33,6 +34,33 @@ export class User extends Document implements IUser {
   @ApiProperty()
   @Prop({ type: Date })
   lastLogin: Date;
+
+  /*******BUSINESS DETAILS *********/
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  businessName: string;
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  businessType: string;
+
+  @ApiProperty()
+  @Prop({ type: String, required: false })
+  address: string;
+
+  @ApiProperty()
+  @Prop({ type: Types.ObjectId, ref: 'State', required: false })
+  stateId: ObjectId;
+
+  @ApiProperty()
+  @Prop({ type: Types.ObjectId, ref: 'Lga', required: false })
+  lgaId: ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('state', { ref: 'State', localField: 'stateId', foreignField: '_id', justOne: true });
+UserSchema.virtual('lga', { ref: 'Lga', localField: 'lgaId', foreignField: '_id', justOne: true });
+
+UserSchema.set('toJSON', { virtuals: true });
+UserSchema.set('toObject', { virtuals: true });

@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { config } from '@on/config';
 import { TermiiService } from '@on/services/termii/service';
 
+import { SharedModule } from '../shared/shared.module';
 import { UserModule } from '../user/user.module';
 
 import { AuthController } from './auth.controller';
@@ -13,6 +14,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 @Module({
   imports: [
     UserModule,
+    SharedModule,
     JwtModule.register({
       global: true,
       secret: config.jwt.secret,

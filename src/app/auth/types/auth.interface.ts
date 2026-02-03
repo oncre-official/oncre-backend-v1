@@ -34,3 +34,11 @@ export interface IVerifyPhoneResponse {
   token: string;
   isLoggedIn: boolean;
 }
+
+export interface ICompleteRegistration {
+  businessName: string;
+  businessType: string;
+  address: string;
+  stateId: ObjectId;
+  lgaId: ObjectId;
+}

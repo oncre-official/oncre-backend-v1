@@ -20,12 +20,7 @@ export class Lga extends Document implements ILga {
 
 export const LgaSchema = SchemaFactory.createForClass(Lga);
 
-LgaSchema.virtual('state', {
-  ref: 'State',
-  localField: 'stateId',
-  foreignField: '_id',
-  justOne: true,
-});
+LgaSchema.virtual('state', { ref: 'State', localField: 'stateId', foreignField: '_id', justOne: true });
 
 LgaSchema.set('toJSON', { virtuals: true });
 LgaSchema.set('toObject', { virtuals: true });

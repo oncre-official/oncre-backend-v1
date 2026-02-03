@@ -7,20 +7,25 @@ import { compareResource, hashResource } from '@on/helpers/password';
 import { TermiiService } from '@on/services/termii/service';
 import { ServiceResponse } from '@on/utils/types';
 
+import { LgaRepository } from '../shared/repository/local-govt.repository';
+import { StateRepository } from '../shared/repository/state.repository';
 import { User } from '../user/model/user.model';
 import { TokenRepository } from '../user/repository/token.repository';
 import { UserRepository } from '../user/repository/user.repository';
 
 import { LoginDto, RegisterDto, ResetPinDto, SetPinDto, VerifyPhoneDto } from './dto/auth.dto';
+import { CompleteRegistrationDto } from './dto/complete-auth.dto';
 import { IRegisterResponse, IVerifyPhoneResponse } from './types/auth.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwt: JwtService,
+    private readonly lga: LgaRepository,
     private readonly user: UserRepository,
     // private readonly termii: TermiiService,
     private readonly token: TokenRepository,
+    private readonly state: StateRepositoryRepository,
   ) {}
 
   /**
@@ -190,6 +195,24 @@ export class AuthService {
     };
 
     return { data, message: 'PIN reset successfully.' };
+  }
+
+  /**
+   * STEP -4
+   */
+
+  public async complete(user: User, payload: CompleteRegistrationDto): Promise<ServiceResponse<User>> {
+    const { stateId, lgaId } = payload;
+
+    const state = await this.state.findById(stateId);
+    if (!state) throw new NotFoundException('Invalid state selected.');
+
+    const lga = await this.lga.findById(lgaId);
+    if (!lga) throw new NotFoundException('Invalid LGA selected.');
+
+    const updated = await this.user.updateById(user._id, payload);
+
+    return { data: updated, message: 'Registration completed successfully.' };
   }
 
   /**
