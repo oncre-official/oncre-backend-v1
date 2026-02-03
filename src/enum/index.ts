@@ -1,6 +1,6 @@
 export enum ROLE {
-  USER = 'user',
-  ADMIN = 'admin',
+  MERCHANT = 'merchant',
+  C00PERATIVE = 'cooperative',
 }
 
 export enum BUSINESS_TYPE {

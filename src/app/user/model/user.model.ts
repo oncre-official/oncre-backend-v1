@@ -19,7 +19,7 @@ export class User extends Document implements IUser {
   pin: string;
 
   @ApiProperty()
-  @Prop({ type: String, required: true, default: ROLE.USER })
+  @Prop({ type: String, required: true, default: ROLE.MERCHANT })
   role: ROLE;
 
   @ApiProperty()
