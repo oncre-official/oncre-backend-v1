@@ -25,7 +25,7 @@ export class AuthService {
     private readonly user: UserRepository,
     // private readonly termii: TermiiService,
     private readonly token: TokenRepository,
-    private readonly state: StateRepositoryRepository,
+    private readonly state: StateRepository,
   ) {}
 
   /**
@@ -207,7 +207,7 @@ export class AuthService {
     const state = await this.state.findById(stateId);
     if (!state) throw new NotFoundException('Invalid state selected.');
 
-    const lga = await this.lga.findById(lgaId);
+    const lga = await this.lga.findOne({ stateId, _id: lgaId });
     if (!lga) throw new NotFoundException('Invalid LGA selected.');
 
     const updated = await this.user.updateById(user._id, payload);

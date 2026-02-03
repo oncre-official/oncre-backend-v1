@@ -1,6 +1,8 @@
 import { ObjectId } from 'mongodb';
 import { Model, PopulateOptions } from 'mongoose';
 
+import { normalizeMongoIds } from '@on/helpers/db';
+
 export interface AggregateOption {
   limit?: number;
   skip?: number;
@@ -24,7 +26,9 @@ export class BaseRepository<T> {
   }
 
   async findOne(query: GenericRecord, options?: Options): Promise<T> {
-    let queryBuilder: any = this.repository.findOne(query);
+    const parsedQuery = normalizeMongoIds(query);
+
+    let queryBuilder: any = this.repository.findOne(parsedQuery);
 
     if (options && options.populate) queryBuilder = queryBuilder.populate(options.populate);
 
