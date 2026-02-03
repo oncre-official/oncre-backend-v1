@@ -19,7 +19,7 @@ export class AuthService {
   constructor(
     private readonly jwt: JwtService,
     private readonly user: UserRepository,
-    private readonly termii: TermiiService,
+    // private readonly termii: TermiiService,
     private readonly token: TokenRepository,
   ) {}
 
@@ -210,10 +210,10 @@ export class AuthService {
       expiresAt,
     });
 
-    const message = `Your otp code is ${token} valid for 10 minutes`;
-    const to = normalizePhoneNumber(user.phone);
+    // const message = `Your otp code is ${token} valid for 10 minutes`;
+    // const to = normalizePhoneNumber(user.phone);
 
-    await this.termii.sendMessage(to, message);
+    // await this.termii.sendMessage(to, message);
 
     return token;
   }
