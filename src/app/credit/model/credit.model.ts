@@ -39,3 +39,12 @@ export class Credit extends Document implements ICredit {
 }
 
 export const CreditSchema = SchemaFactory.createForClass(Credit);
+
+CreditSchema.virtual('repayments', {
+  ref: 'Repayment',
+  localField: '_id',
+  foreignField: 'creditId',
+});
+
+CreditSchema.set('toObject', { virtuals: true });
+CreditSchema.set('toJSON', { virtuals: true });

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { CustomerModule } from '../customer/customer.module';
+
 import { CreditController } from './credit.controller';
 import { CreditService } from './credit.service';
 import { Credit, CreditSchema } from './model/credit.model';
@@ -14,6 +16,7 @@ import { RepaymentRepository } from './repository/repayment.repository';
       { name: Credit.name, schema: CreditSchema },
       { name: Repayment.name, schema: RepaymentSchema },
     ]),
+    CustomerModule,
   ],
   controllers: [CreditController],
   providers: [CreditRepository, CreditService, CreditRepository, RepaymentRepository],

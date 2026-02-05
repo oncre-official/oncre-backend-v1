@@ -44,7 +44,7 @@ export class BaseRepository<T> {
     return await queryBuilder.exec();
   }
 
-  async findAndCount(query: GenericRecord, options?: Options): Promise<{ data: T[]; count: number }> {
+  async findAndCount(query: GenericRecord, options?: Options): Promise<{ row: T[]; count: number }> {
     const dataQueryBuilder = this.queryBuilder(query, options.populate, options?.sort);
     const countQueryBuilder = this.repository.find(query);
 
@@ -57,7 +57,21 @@ export class BaseRepository<T> {
       countQueryBuilder.countDocuments().exec(),
     ]);
 
-    return { data, count };
+    return { row: data, count };
+  }
+
+  async findOneAndCreate(query: GenericRecord, payload: GenericRecord, options?: Options): Promise<T> {
+    const parsedQuery = normalizeMongoIds(query);
+
+    let queryBuilder: any = this.repository.findOneAndUpdate(
+      parsedQuery,
+      { $setOnInsert: payload },
+      { new: true, upsert: true },
+    );
+
+    if (options?.populate) queryBuilder = queryBuilder.populate(options.populate);
+
+    return await queryBuilder.exec();
   }
 
   async aggregate(query: any, options?: Options): Promise<T[]> {

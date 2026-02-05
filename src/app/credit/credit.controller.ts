@@ -1,18 +1,21 @@
-import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 
-import { Roles } from '@on/decorators/roles.decorator';
+import { User } from '@on/decorators/user.decorator';
 import { ErrorResponse, JsonResponse } from '@on/handlers/responses';
 import { requestFilter } from '@on/helpers/filter';
 import { ApiResponseDTO } from '@on/utils/dto/response.dto';
 import { ResponseDTO } from '@on/utils/types';
 
 import { JwtAuthGuard } from '../auth/guard/auth.guard';
-import { RoleGuard } from '../auth/guard/role.guard';
 
 import { CreditService } from './credit.service';
+import { OfferCreditDto } from './dto/offer.dto';
+import { QueryCreditDto } from './dto/query.dto';
+import { RepaymentDto } from './dto/repay.dto';
 import { Credit } from './model/credit.model';
 
+import type { UserDocument } from '../user/model/user.model';
 import type { Response, Request } from 'express';
 
 @ApiTags('Credit')
@@ -23,18 +26,68 @@ export class CreditController {
 
   @ApiBearerAuth()
   @ApiOperation({
+    summary: 'Offer credit',
+    description: 'Allows credit to a customer',
+  })
+  @ApiOkResponse({ description: 'Offer credits successful ', type: [Credit] })
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async offerCredit(
+    @Body() payload: OfferCreditDto,
+    @User() user: UserDocument,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<ResponseDTO> {
+    try {
+      const response = await this.creditService.offer(user, payload);
+
+      return JsonResponse(res, response);
+    } catch (error) {
+      return ErrorResponse(res, error, req);
+    }
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
     summary: 'Get credits',
     description: 'Allows admin get credits',
   })
   @ApiOkResponse({ description: 'Get credits successful ', type: [Credit] })
-  @Roles('admin')
-  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async findCredits(@Query() query: any, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
+  async findCredit(@Query() query: QueryCreditDto, @Res() res: Response, @Req() req: Request): Promise<ResponseDTO> {
     try {
+      const { skip, limit } = query;
+
       const filter = requestFilter(query);
 
-      const response = await this.creditService.find(filter);
+      const response = await this.creditService.find(filter, skip, limit);
+
+      return JsonResponse(res, response);
+    } catch (error) {
+      return ErrorResponse(res, error, req);
+    }
+  }
+
+  /**
+   * REPAYMENT
+   */
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Repay active credit',
+    description: 'Allows users to repay credits',
+  })
+  @ApiOkResponse({ description: 'Repay credits successful ', type: [Credit] })
+  @UseGuards(JwtAuthGuard)
+  @Post('/:id/repay')
+  async repayCredit(
+    @Param('id') id: string,
+    @Body() payload: RepaymentDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ): Promise<ResponseDTO> {
+    try {
+      const response = await this.creditService.repay(id, payload);
 
       return JsonResponse(res, response);
     } catch (error) {
