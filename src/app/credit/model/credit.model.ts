@@ -46,5 +46,12 @@ CreditSchema.virtual('repayments', {
   foreignField: 'creditId',
 });
 
+CreditSchema.virtual('customer', {
+  ref: 'Customer',
+  localField: 'customerId',
+  foreignField: '_id',
+  justOne: true,
+});
+
 CreditSchema.set('toObject', { virtuals: true });
 CreditSchema.set('toJSON', { virtuals: true });

@@ -25,7 +25,7 @@ export class CreditService {
   async find(query: QueryCreditDto, skip: number, limit: number): Promise<ServiceResponse<any>> {
     const data = await this.credit.findAndCount(query, {
       aggregate: { skip, limit },
-      populate: [{ path: 'repayments' }],
+      populate: [{ path: 'repayments' }, { path: 'customer' }],
       sort: { createdAt: -1 },
     });
 
