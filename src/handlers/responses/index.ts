@@ -20,7 +20,7 @@ export const JsonResponse = (res, response): ResponseDTO => {
   });
 };
 
-export const ErrorResponse = (res, error: Error, req?: Request): ResponseDTO => {
+export const ErrorResponse = (res, error: Error | any, req?: Request): ResponseDTO => {
   const url = req?.originalUrl || 'Unknown URL';
   const email = 'Unknown user email';
 

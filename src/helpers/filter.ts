@@ -1,18 +1,22 @@
 import { ObjectId } from 'mongodb';
 
-const ids = ['_id', 'userId', 'stateId'];
+import { normalizeMongoIds } from './db';
 
-export function requestFilter(data) {
-  if (data) {
-    Object.keys(data).forEach((i) => {
-      if (ids.includes(i) && typeof data[i] === 'string') {
-        data[i] = new ObjectId(data[i]);
-      } else data[i] = { $regex: new RegExp(data[i]), $options: 'i' };
-    });
-  }
+export function requestFilter(data: Record<string, any>) {
+  if (!data) return data;
 
-  delete data.offset;
+  delete data.skip;
   delete data.limit;
 
-  return data;
+  const normalized = normalizeMongoIds(data);
+
+  Object.keys(normalized).forEach((key) => {
+    const value = normalized[key];
+
+    if (typeof value === 'string') {
+      normalized[key] = { $regex: value, $options: 'i' };
+    }
+  });
+
+  return normalized;
 }

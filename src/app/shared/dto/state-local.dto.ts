@@ -10,5 +10,5 @@ export class StateQueryDto {
 
 export class LgaQueryDto extends StateQueryDto {
   @ApiPropertyOptional()
-  stateId: string;
+  stateId?: string;
 }
