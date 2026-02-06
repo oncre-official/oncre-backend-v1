@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb';
-
 import { normalizeMongoIds } from './db';
 
 export function requestFilter(data: Record<string, any>) {
