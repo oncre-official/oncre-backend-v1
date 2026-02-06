@@ -21,3 +21,23 @@ export const normalizeMongoIds = (query: Record<string, any>) => {
 
   return parsedQuery;
 };
+
+const normalizeAggregationValue = (value: any): any => {
+  if (Array.isArray(value)) {
+    return value.map((v) => normalizeAggregationValue(v));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, val]) => [key, normalizeAggregationValue(val)]));
+  }
+
+  if (typeof value === 'string' && Types.ObjectId.isValid(value)) {
+    return new Types.ObjectId(value);
+  }
+
+  return value;
+};
+
+export const normalizeAggregationPipeline = (pipeline: any[]) => {
+  return pipeline.map((stage) => normalizeAggregationValue(stage));
+};

@@ -6,6 +6,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheableMemory } from 'cacheable';
 
+import { AnalyticModule } from './app/analytics/analytics.module.';
 import { AuthModule } from './app/auth/auth.module';
 import { CreditModule } from './app/credit/credit.module';
 import { CustomerModule } from './app/customer/customer.module';
@@ -38,8 +39,9 @@ import { HttpExceptionFilter } from './handlers/exceptions/http-exception.filter
     AuthModule,
     UserModule,
     SharedModule,
-    CustomerModule,
     CreditModule,
+    AnalyticModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [
